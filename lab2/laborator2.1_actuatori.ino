@@ -1,4 +1,5 @@
 #include <LiquidCrystal.h>
+#include <stdio.h>
 
 #define BAUD_RATE       9600
 
