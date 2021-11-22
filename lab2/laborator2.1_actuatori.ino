@@ -34,7 +34,6 @@ void setup(){
 void loop(){
     int buff;
 
-
     if (Serial.available() > 0)
     {
         lcd.clear();
@@ -51,7 +50,6 @@ void loop(){
             digitalWrite(RELAY_PIN, LOW);
             printf("Bec deconectat");
         }
-        
     }
     
 }

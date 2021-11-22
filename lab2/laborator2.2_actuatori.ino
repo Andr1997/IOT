@@ -1,4 +1,5 @@
 #include <LiquidCrystal.h>
+#include <stdio.h>
 
 #define BAUD_RATE       9600
 
@@ -13,12 +14,31 @@
 #define PWM_VALUE_MIN                   0
 #define PWM_VALUE_MAX                   255
 
+#define RELAY_PIN       6
+
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+LiquidCrystal lcd(rs,en,d4,d5,d6,d7);
+
+static FILE uartout = {0};
+
+static int putChar(char c, FILE *stream){
+    lcd.write(c);
+    return 0;
+}
+
 
 void setup(){
     Serial.begin(BAUD_RATE);
     pinMode(PWM_PIN, OUTPUT);
     pinMode(IN1, OUTPUT);
     pinMode(IN2, OUTPUT);
+
+    lcd.begin(16, 2);
+    pinMode(RELAY_PIN, OUTPUT);
+
+    fdev_setup_stream(&uartout,  putChar, NULL, _FDEV_SETUP_RW);
+    stdout = &uartout;
+    stdin = &uartout;
 }
 
 void loop(){
@@ -63,7 +83,6 @@ int8_t setDirection(int8_t speedPercent)
     }
     if (speedPercent == 0)
     {
-        //pinControl(analogWrite,LOW);
         pinControl(LOW, LOW);
         return 0;
     }
@@ -97,9 +116,6 @@ int16_t readInputData()
     if (Serial.available() > 0)
     {
         speedPercent = Serial.parseInt();
-
-
-        //analogWrite(PWM_PIN, speedPercent);
     }
 
     return speedPercent;
@@ -114,18 +130,21 @@ void writeOutputData(const int8_t direction, const uint8_t speedPercent)
         switch(direction)
         {
             case 1:
+                printf("Inainte!\n");
                 Serial.println("Inainte!");
                 Serial.print("Putere: ");
                 Serial.print(speedPercent);
                 Serial.println(" %");
             break;
             case -1:
+                printf("Inapoi!\n");
                 Serial.println("Inapoi!");
                 Serial.print("Putere: ");
                 Serial.print(speedPercent);
                 Serial.println(" %");
             break;
             case 0:
+                printf("Stop!\n");
                 Serial.println("Stop!");
                 Serial.print("Putere: ");
                 Serial.print(speedPercent);
